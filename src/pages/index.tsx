@@ -17,49 +17,69 @@ import { MdDataObject } from "react-icons/md";
 import Teste from "../components/Teste";
 import { useEffect } from "react";
 
-export default function Home() {
 
-  const [dados, setDados] = useState([]);
-  const [loading, setLoading] = useState(false);
+export async function getStaticProps() {
+  const { createClient } = await import("@libsql/client");
+  // Create DB client directly in getStaticProps
+  const client = createClient({
+    url: process.env.TURSO_DB_URL!,
+    authToken: process.env.TURSO_DB_AUTH_TOKEN!,
+  });
+
+  // Fetch all tables at BUILD TIME
+  const tablesResult = await client.execute(
+    "SELECT name FROM sqlite_master WHERE type='table';"
+  );
+
+  // Fetch columns and sample data for all tables
+  const allColumns: Record<string, any[]> = {};
+
+  for (const table of tablesResult.rows) {
+    const tableName = table.name as string;
+    
+    // Get columns info
+    const columnsResult = await client.execute(
+      `PRAGMA table_info(${tableName})`
+    );
+
+    // Get sample data for the table
+    const sampleResult = await client.execute(
+      `SELECT * FROM ${tableName} LIMIT 2`
+    );
+
+    // Add sample data to each column
+    const columnsWithSamples = columnsResult.rows.map(column => {
+      const columnName = column.name as string;
+      return {
+        ...column,
+        sampleData: sampleResult.rows.map(row => row[columnName])
+      };
+    });
+
+    allColumns[tableName] = columnsWithSamples;
+  }
+
+  return {
+    props: {
+      staticTables: tablesResult.rows,
+      staticColumns: allColumns
+    }
+  };
+}
+
+export default function Home({ staticTables, staticColumns }: { 
+  staticTables: any[], 
+  staticColumns: Record<string, any[]>
+}) {
+
+
   const [step, setStep] = useState(0);
-  const [tabelas, setTabelas] = useState([]);
-
-  const buscarDados = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/dados");
-      const data = await response.json();
-      console.log("Dados recebidos FRONTTT :", data);
-      setDados(data);
-      console.log("Dados atualizados VARIAVEL:", dados);
-    } catch (error) {
-      console.error("Falha na busca:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const buscarTabelas = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/getTabelas");
-      const data = await response.json();
-      console.log("Dados recebidos FRONTTT :", data);
-      setTabelas(data);
-    } catch (error) {
-      console.error("Falha na busca:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   useEffect(() => {
-    buscarTabelas();
-  }, []);
-
-  useEffect(() => {
-    console.log("Dados atualizados VARIAVEL 2222222222:", tabelas);
-  }, [tabelas]);
+    console.log("Dados atualizados TABELA 2222222222:", staticTables);
+    console.log("COLUNAS 1232:", staticColumns);
+  }, [staticTables, staticColumns]);
 
   return (
     <Box w="100%" h="100vh" bgColor={"#151516"} pt="1%" pb="1%" pl="5%" pr="5%" >
@@ -70,11 +90,10 @@ export default function Home() {
             NBA Status
           </Text>
         </HStack>
-        <InputGroup variant="subtle" w="70%" endElement={<FaSearch ml="3vh" color='#E3510F' />}>
+        <InputGroup w="70%">
           <Input pl="3%" pb="0.2%" variant="subtle" fontSize={"16px"} borderRadius={"50px"} bgColor={"#202124"} placeholder="Pesquisar jogadores, status ou jogos..." />
         </InputGroup>
         <HStack
-          onClick={() => buscarDados()}
           cursor={"pointer"}
           pl="4" pt="2" pb="2" pr="4" borderRadius={"50px"} bgColor={"#202124"} >
           Login
@@ -160,7 +179,7 @@ export default function Home() {
         </VStack>
         <Box w="full" h="full" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" >
           {step === 0 && (
-            <Teste tabelas={tabelas}/>
+            <Teste tabelas={staticTables}/>
           )}
           {step === 1 && (
             <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} >

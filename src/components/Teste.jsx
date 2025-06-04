@@ -107,7 +107,7 @@ export default function Teste({ tabelas }) {
 
         </Box>
         <Box maxW={"100%"} ml="5%" h="100%" >
-          <Box p={6} boxShadow="lg" borderRadius="18px" bgColor="#202124">
+          {/* <Box p={6} boxShadow="lg" borderRadius="18px" bgColor="#202124">
             <HStack w="100%" justifyContent={"center"} alignItems="center">
               <Separator variant="dotted" size="lg" flex="1" />
               <Text flexShrink="0" fontFamily="Poppins" fontSize="2xl" fontWeight="bold">Tecnologias Utilizadas</Text>
@@ -153,7 +153,7 @@ export default function Teste({ tabelas }) {
                 </VStack>
               </HStack>
             </HStack>
-          </Box>
+          </Box> */}
 
         </Box>
       </VStack>
