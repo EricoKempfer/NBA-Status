@@ -16,38 +16,39 @@ import { GiBasketballBasket } from "react-icons/gi";
 import { MdDataObject } from "react-icons/md";
 import Teste from "../components/Teste";
 import { useEffect } from "react";
-
+import {
+  Combobox,
+  Portal,
+  useFilter,
+  useListCollection,
+} from "@chakra-ui/react"
+import { useRef } from "react"
 
 export async function getStaticProps() {
   const { createClient } = await import("@libsql/client");
-  // Create DB client directly in getStaticProps
+
   const client = createClient({
     url: process.env.TURSO_DB_URL!,
     authToken: process.env.TURSO_DB_AUTH_TOKEN!,
   });
 
-  // Fetch all tables at BUILD TIME
   const tablesResult = await client.execute(
     "SELECT name FROM sqlite_master WHERE type='table';"
   );
 
-  // Fetch columns and sample data for all tables
   const allColumns: Record<string, any[]> = {};
 
   for (const table of tablesResult.rows) {
     const tableName = table.name as string;
-    
-    // Get columns info
+
     const columnsResult = await client.execute(
       `PRAGMA table_info(${tableName})`
     );
 
-    // Get sample data for the table
     const sampleResult = await client.execute(
       `SELECT * FROM ${tableName} LIMIT 2`
     );
 
-    // Add sample data to each column
     const columnsWithSamples = columnsResult.rows.map(column => {
       const columnName = column.name as string;
       return {
@@ -59,27 +60,54 @@ export async function getStaticProps() {
     allColumns[tableName] = columnsWithSamples;
   }
 
+  let staticPlayers = [];
+  try {
+    const playersResult = await client.execute(
+      "SELECT * FROM common_player_info"
+    );
+    staticPlayers = playersResult.rows.map(player => ({
+      label: player.display_first_last as string,
+      value: player.person_id as string,
+      playerData: player
+    }));
+  } catch (error) {
+    console.error("Error fetching players:", error);
+  }
+
   return {
     props: {
       staticTables: tablesResult.rows,
-      staticColumns: allColumns
+      staticColumns: allColumns,
+      staticPlayers: staticPlayers
     }
   };
 }
 
-export default function Home({ staticTables, staticColumns }: { 
-  staticTables: any[], 
-  staticColumns: Record<string, any[]>
+export default function Home({ staticTables, staticColumns, staticPlayers }: {
+  staticTables: any[],
+  staticColumns: Record<string, any[]>,
+  staticPlayers: any[]
 }) {
 
 
   const [step, setStep] = useState(0);
-  
 
   useEffect(() => {
     console.log("Dados atualizados TABELA 2222222222:", staticTables);
     console.log("COLUNAS 1232:", staticColumns);
-  }, [staticTables, staticColumns]);
+    console.log("PLAYERS:", staticPlayers);
+  }, [staticTables, staticColumns, staticPlayers]);
+
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const { startsWith } = useFilter({ sensitivity: "base" })
+
+  const { collection, filter, reset } = useListCollection({
+    initialItems: staticPlayers,
+    filter: startsWith,
+    limit: 10,
+  })
+
 
   return (
     <Box w="100%" h="100vh" bgColor={"#151516"} pt="1%" pb="1%" pl="5%" pr="5%" >
@@ -90,9 +118,38 @@ export default function Home({ staticTables, staticColumns }: {
             NBA Status
           </Text>
         </HStack>
-        <InputGroup w="70%">
-          <Input pl="3%" pb="0.2%" variant="subtle" fontSize={"16px"} borderRadius={"50px"} bgColor={"#202124"} placeholder="Pesquisar jogadores, status ou jogos..." />
-        </InputGroup>
+
+        <Combobox.Root
+          collection={collection}
+          onInputValueChange={(e) => filter(e.inputValue)}
+          openOnClick
+          width="70%"
+          borderRadius="50%"
+        >
+          <Combobox.Control>
+            <Combobox.Input placeholder="Type to search" />
+            <Combobox.IndicatorGroup>
+              <Combobox.ClearTrigger />
+              <Combobox.Trigger onClick={reset} />
+            </Combobox.IndicatorGroup>
+          </Combobox.Control>
+          <Portal>
+            <Combobox.Positioner>
+              <Combobox.Content ref={contentRef}>
+                {collection.items.map((item) => (
+                  <Combobox.Item key={item.value} item={item}>
+                    <Combobox.ItemText truncate>
+                      
+                      {item.label}
+                    </Combobox.ItemText>
+                    <Combobox.ItemIndicator />
+                  </Combobox.Item>
+                ))}
+              </Combobox.Content>
+            </Combobox.Positioner>
+          </Portal>
+        </Combobox.Root>
+
         <HStack
           cursor={"pointer"}
           pl="4" pt="2" pb="2" pr="4" borderRadius={"50px"} bgColor={"#202124"} >
@@ -100,7 +157,7 @@ export default function Home({ staticTables, staticColumns }: {
           <FaRegUserCircle size="1.1em" />
         </HStack>
       </HStack>
-      <HStack w="100%" h="88vh" pb="2%" alignItems={"center"} justify={"start"} mt="2%">
+      <HStack w="100%" h="90vh" pb="2%" alignItems={"center"} justify={"start"} pt="2%">
         {/* Primeira Box: Itens até Jogos */}
         <VStack>
           <Box w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} >
@@ -150,7 +207,7 @@ export default function Home({ staticTables, staticColumns }: {
           <Box w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} mt={"2"}>
             <HStack gap="4">
               <FaLaptopCode size={"1.5em"} color={step === 6 ? "#E3510F" : undefined} />
-              <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 6 ? "#E3510F" : undefined}>
+              <Text lineClamp={1} fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 6 ? "#E3510F" : undefined}>
                 Front-End
               </Text>
             </HStack>
@@ -169,7 +226,7 @@ export default function Home({ staticTables, staticColumns }: {
               </Text>
             </HStack>
             <Separator borderRadius={"10px"} size="md" orientation='horizontal' mt="2" mb="2" />
-            <HStack gap="4">
+            <HStack gap="4" cursor="pointer" onClick={() => window.open('https://www.kaggle.com/datasets/wyattowalsh/basketball', '_blank')}>
               <MdDataObject size={"1.5em"} color={step === 9 ? "#E3510F" : undefined} />
               <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 9 ? "#E3510F" : undefined}>
                 Dataset
@@ -179,7 +236,7 @@ export default function Home({ staticTables, staticColumns }: {
         </VStack>
         <Box w="full" h="full" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" >
           {step === 0 && (
-            <Teste tabelas={staticTables}/>
+            <Teste tabelas={staticTables} colunas={staticColumns} players={staticPlayers} />
           )}
           {step === 1 && (
             <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} >
