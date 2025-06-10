@@ -23,73 +23,17 @@ import {
   useListCollection,
 } from "@chakra-ui/react"
 import { useRef } from "react"
+import { fetchStaticData } from '../lib/data';
 
 export async function getStaticProps() {
-  const { createClient } = await import("@libsql/client");
-
-  const client = createClient({
-    url: process.env.TURSO_DB_URL!,
-    authToken: process.env.TURSO_DB_AUTH_TOKEN!,
-  });
-
-  const tablesResult = await client.execute(
-    "SELECT name FROM sqlite_master WHERE type='table';"
-  );
-
-  const allColumns: Record<string, any[]> = {};
-
-  for (const table of tablesResult.rows) {
-    const tableName = table.name as string;
-
-    const columnsResult = await client.execute(
-      `PRAGMA table_info(${tableName})`
-    );
-
-    const sampleResult = await client.execute(
-      `SELECT * FROM ${tableName} LIMIT 2`
-    );
-
-    const columnsWithSamples = columnsResult.rows.map(column => {
-      const columnName = column.name as string;
-      return {
-        ...column,
-        sampleData: sampleResult.rows.map(row => row[columnName])
-      };
-    });
-
-    allColumns[tableName] = columnsWithSamples;
-  }
-
-  let staticPlayers = [];
-  try {
-    const playersResult = await client.execute(
-      "SELECT * FROM common_player_info"
-    );
-    staticPlayers = playersResult.rows.map(player => ({
-      label: player.display_first_last as string,
-      value: player.person_id as string,
-      playerData: player
-    }));
-  } catch (error) {
-    console.error("Error fetching players:", error);
-  }
-
+  const data = await fetchStaticData();
+  
   return {
-    props: {
-      staticTables: tablesResult.rows,
-      staticColumns: allColumns,
-      staticPlayers: staticPlayers
-    }
+    props: data
   };
 }
 
-export default function Home({ staticTables, staticColumns, staticPlayers }: {
-  staticTables: any[],
-  staticColumns: Record<string, any[]>,
-  staticPlayers: any[]
-}) {
-
-
+export default function Home({ staticTables, staticColumns, staticPlayers }) {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -98,16 +42,15 @@ export default function Home({ staticTables, staticColumns, staticPlayers }: {
     console.log("PLAYERS:", staticPlayers);
   }, [staticTables, staticColumns, staticPlayers]);
 
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef(null);
 
-  const { startsWith } = useFilter({ sensitivity: "base" })
+  const { startsWith } = useFilter({ sensitivity: "base" });
 
   const { collection, filter, reset } = useListCollection({
     initialItems: staticPlayers,
     filter: startsWith,
     limit: 10,
-  })
-
+  });
 
   return (
     <Box w="100%" h="100vh" bgColor={"#151516"} pt="1%" pb="1%" pl="5%" pr="5%" >
@@ -205,7 +148,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }: {
           </Box>
           {/* Segunda Box: Front-End para baixo */}
           <Box w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} mt={"2"}>
-            <HStack gap="4">
+            <HStack gap="4" cursor="pointer" onClick={() => window.open('https://github.com/EricoKempfer/NBA-Status', '_blank')}>
               <FaLaptopCode size={"1.5em"} color={step === 6 ? "#E3510F" : undefined} />
               <Text lineClamp={1} fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 6 ? "#E3510F" : undefined}>
                 Front-End
@@ -219,7 +162,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }: {
               </Text>
             </HStack>
             <Separator borderRadius={"10px"} size="md" orientation='horizontal' mt="2" mb="2" />
-            <HStack gap="4">
+            <HStack gap="4" cursor="pointer" onClick={() => window.open('https://turso.tech/', '_blank')}>
               <GoDatabase size={"1.5em"} color={step === 8 ? "#E3510F" : undefined} />
               <Text lineClamp={1} fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 8 ? "#E3510F" : undefined}>
                 Banco de Dados
