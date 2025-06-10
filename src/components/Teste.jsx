@@ -149,7 +149,7 @@ export default function Teste({ tabelas, colunas, players }) {
                   {colunas ? Object.values(colunas).reduce((total, cols) => total + cols.length, 0) : 0}
                 </Text>
                 <Text fontSize="md" color="gray.300">
-                  Colunas Totais
+                  Colunas
                 </Text>
               </VStack>
               <VStack>
@@ -162,7 +162,7 @@ export default function Teste({ tabelas, colunas, players }) {
               </VStack>
               <VStack>
                 <Text fontSize="3xl" fontWeight="bold" color="#E3510F">
-                  1946-2023
+                  77
                 </Text>
                 <Text fontSize="md" color="gray.300">
                   Temporadas
