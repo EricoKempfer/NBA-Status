@@ -49,7 +49,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
   const { collection, filter, reset } = useListCollection({
     initialItems: staticPlayers,
     filter: startsWith,
-    limit: 10,
+    limit: 8,
   });
 
   return (
@@ -67,10 +67,11 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
           onInputValueChange={(e) => filter(e.inputValue)}
           openOnClick
           width="70%"
-          borderRadius="50%"
         >
-          <Combobox.Control>
-            <Combobox.Input placeholder="Type to search" />
+          <Combobox.Control >
+            <InputGroup startElement={<FaSearch />}>
+          <Combobox.Input placeholder="Pesquise jogadores..." />
+        </InputGroup>
             <Combobox.IndicatorGroup>
               <Combobox.ClearTrigger />
               <Combobox.Trigger onClick={reset} />
@@ -101,9 +102,8 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
         </HStack>
       </HStack>
       <HStack w="100%" h="90vh" pb="2%" alignItems={"center"} justify={"start"} pt="2%">
-        {/* Primeira Box: Itens até Jogos */}
         <VStack>
-          <Box w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} >
+          <Box boxShadow={"sm"} w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} >
             <HStack gap="4" onClick={() => setStep(0)} cursor="pointer">
               <FaHome size={"1.5em"} color={step === 0 ? "#E3510F" : undefined} />
               <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 0 ? "#E3510F" : undefined}>
@@ -146,8 +146,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
               </Text>
             </HStack>
           </Box>
-          {/* Segunda Box: Front-End para baixo */}
-          <Box w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} mt={"2"}>
+          <Box w="auto" boxShadow={"sm"} display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} mt={"2"}>
             <HStack gap="4" cursor="pointer" onClick={() => window.open('https://github.com/EricoKempfer/NBA-Status', '_blank')}>
               <FaLaptopCode size={"1.5em"} color={step === 6 ? "#E3510F" : undefined} />
               <Text lineClamp={1} fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 6 ? "#E3510F" : undefined}>
@@ -155,7 +154,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
               </Text>
             </HStack>
             <Separator borderRadius={"10px"} size="md" orientation='horizontal' mt="2" mb="2" />
-            <HStack gap="4">
+            <HStack gap="4" cursor="pointer" onClick={() => window.open('https://github.com/EricoKempfer/NBA-Status/blob/main/src/lib/data.js', '_blank')}>
               <FaCode size={"1.5em"} color={step === 7 ? "#E3510F" : undefined} />
               <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} color={step === 7 ? "#E3510F" : undefined}>
                 API
@@ -177,7 +176,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
             </HStack>
           </Box>
         </VStack>
-        <Box w="full" h="full" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" >
+        <Box w="full" h="full" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" overflow="hidden" minW="0">
           {step === 0 && (
             <Teste tabelas={staticTables} colunas={staticColumns} players={staticPlayers} />
           )}

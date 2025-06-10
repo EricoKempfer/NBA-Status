@@ -20,11 +20,11 @@ export default function Teste({ tabelas, colunas, players }) {
     setSelectedTable(null);
   };
   return (
-    <HStack w="100%" h="100%">
-      <Box w="40%" h="100%" p={6} boxShadow="lg" borderRadius="18px" bgColor="#202124" >
+    <HStack w="100%" h="100%" spacing={4} maxW="100%" overflow="hidden">
+      <Box w="38%" minW="350px" maxW="38%" h="100%" p={6} boxShadow="sm" borderRadius="18px" bgColor="#202124" overflow="hidden">
         <HStack mb={4} spacing={3} alignItems="center">
           <GoDatabase color="#E3510F" size={"1.5em"} />
-          <Text fontFamily="Poppins" fontSize="2xl" fontWeight="bold" >
+          <Text fontFamily="Poppins" fontSize="2xl" lineClamp={1} fontWeight="bold" >
             Tabelas do Banco de Dados
           </Text>
         </HStack>
@@ -72,16 +72,16 @@ export default function Teste({ tabelas, colunas, players }) {
           </VStack>
         </Box>
       </Box>
-      <VStack w="60%" h="100%"  >
-        <Box maxW={"100%"} ml="5%" h="100%" >
-          <Box p={6} boxShadow="lg" borderRadius="18px" bgColor="#202124">
+      <VStack flex="1" maxW="62%" h="100%" overflow="hidden">
+        <Box w="100%" h="auto" minH="0">
+          <Box p={6} boxShadow="sm" borderRadius="18px" bgColor="#202124">
             <HStack w="100%" justifyContent={"center"} alignItems="center">
               <Separator variant="dotted" size="lg" flex="1" />
               <Text flexShrink="0" fontFamily="Poppins" fontSize="2xl" fontWeight="bold">Tecnologias Utilizadas</Text>
               <Separator variant="dotted" size="lg" flex="1" />
             </HStack>
-            <Box mt={6}  overflowX="auto" whiteSpace="nowrap" w="100%">
-              <HStack maxW={"50%"} w="10vh" spacing={6} mb="3" minW="max-content">
+            <Box mt={6} overflowX="auto" whiteSpace="nowrap" w="100%">
+              <HStack spacing={6} mb="3" minW="max-content">
                 <VStack as="span" minW="80px">
                   <Icon as={require('react-icons/fa').FaReact} boxSize={10} color="#61DAFB" />
                   <Text fontSize="sm" color="white">React</Text>
@@ -118,13 +118,18 @@ export default function Teste({ tabelas, colunas, players }) {
                   <Icon as={require('react-icons/fa').FaNpm} boxSize={10} color="#CB3837" />
                   <Text fontSize="sm" color="white">Npm</Text>
                 </VStack>
+                <VStack as="span" minW="80px">
+                  <Icon as={require('react-icons/fa').FaGithub} boxSize={10} color="white" />
+                  <Text fontSize="sm" color="white">GitHub</Text>
+                </VStack>
+                
               </HStack>
             </Box>
           </Box>
 
         </Box>
-        <Box w={"100%"} ml="5%" h="100%" >
-          <Box p={6} boxShadow="lg" borderRadius="18px" bgColor="#202124" mt={4}>
+        <Box w="100%" h="auto" minH="0">
+          <Box p={6} boxShadow="sm" borderRadius="18px" bgColor="#202124" mt={4}>
             <HStack w="100%" justifyContent={"center"} alignItems="center">
               <Separator variant="dotted" size="lg" flex="1" />
               <Text flexShrink="0" fontFamily="Poppins" fontSize="2xl" fontWeight="bold">Estatísticas do Banco</Text>
