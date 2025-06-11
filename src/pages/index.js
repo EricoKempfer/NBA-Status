@@ -15,6 +15,7 @@ import { GiBasketballJersey } from "react-icons/gi";
 import { GiBasketballBasket } from "react-icons/gi";
 import { MdDataObject } from "react-icons/md";
 import Teste from "../components/Teste";
+import PlayerAnalytics from "../components/PlayerAnalytics";
 import { useEffect } from "react";
 import {
   Combobox,
@@ -66,8 +67,8 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
   };
 
   return (
-    <Box w="100%" h="100vh" bgColor={"#151516"} pt="1%" pb="1%" pl="5%" pr="5%" >
-      <HStack w="100%" h="6vh" justifyContent={"space-between"} >
+    <Box w="100%" h="100vh" bgColor={"#151516"}  pl="5%" pr="5%" >
+      <HStack w="100%" h="6vh" pt="1%"  justifyContent={"space-between"} >
         <HStack >
           <Image src="/1.png" alt="Logo" h="30px" />
           <Text fontFamily={"Poppins"} fontSize={"20px"} fontWeight={"bold"} >
@@ -113,7 +114,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
           <FaRegUserCircle size="1.1em" />
         </HStack>
       </HStack>
-      <HStack w="100%" h="90vh" pb="2%" alignItems={"center"} justify={"start"} pt="2%">
+      <HStack w="100%" h="94vh" pb="2%" alignItems={"center"} justify={"start"} >
         <VStack>
           <Box boxShadow={"sm"} w="auto" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" bgColor={"#202124"} >
             <HStack gap="4" onClick={() => setStep(0)} cursor="pointer">
@@ -188,7 +189,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
             </HStack>
           </Box>
         </VStack>
-        <Box w="full" h="full" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="4" pb="4" overflow="hidden" minW="0">
+        <Box w="full" h="full" display="inline-flex" flexDirection="column" pr="6" borderRadius={"18px"} pl="6" pt="2" pb="0" overflow="hidden" minW="0">
           {step === 0 && (
             <Teste tabelas={staticTables} colunas={staticColumns} players={staticPlayers} />
           )}
@@ -198,9 +199,7 @@ export default function Home({ staticTables, staticColumns, staticPlayers }) {
             </Text>
           )}
           {step === 2 && (
-            <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} >
-              Jogadores - Em desenvolvimento...
-            </Text>
+            <PlayerAnalytics players={staticPlayers} />
           )}
           {step === 3 && (
             <Text fontFamily={"Roboto"} fontSize={"18px"} fontWeight={"500"} >

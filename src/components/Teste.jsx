@@ -20,7 +20,7 @@ export default function Teste({ tabelas, colunas, players }) {
     setSelectedTable(null);
   };
   return (
-    <HStack w="100%" h="100%" spacing={4} maxW="100%" overflow="hidden">
+    <HStack w="100%" h="100%" p="2%" spacing={4} maxW="100%" overflow="hidden">
       <Box w="38%" minW="350px" maxW="38%" h="100%" p={6} boxShadow="sm" borderRadius="18px" bgColor="#202124" overflow="hidden">
         <HStack mb={4} spacing={3} alignItems="center">
           <GoDatabase color="#E3510F" size={"1.5em"} />
@@ -28,7 +28,7 @@ export default function Teste({ tabelas, colunas, players }) {
             Tabelas do Banco de Dados
           </Text>
         </HStack>
-        <Box w="100%" maxH="65vh" overflowY="scroll" pr={2}>
+        <Box w="100%" h="auto" maxH="90%" overflowY="auto" pr={2}>
           <VStack align="start" spacing={2} w="100%">
             {Array.isArray(tabelas) && tabelas.length > 0 ? (
               tabelas.map((tabela, idx) => (
